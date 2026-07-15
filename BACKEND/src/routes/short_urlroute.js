@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.post("/create", createShortUrl);
 router.get("/:short_url", redirectToOriginalUrl);
-router.get("/:short_url", redirectToOriginalUrl);
 
 
 export default router;

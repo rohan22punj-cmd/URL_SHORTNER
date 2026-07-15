@@ -7,3 +7,4 @@ export default function wrapAsync(fn) {
         }
     }
 }
+//avoids writing try/catch in every async controller.

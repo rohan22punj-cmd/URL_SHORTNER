@@ -1,10 +1,13 @@
 import { generateNanoid } from "../utils/helper.js";
 import urlSchema from "../models/shortUrlSchema.js";
 import { saveShortUrl } from "../dao/short_url.js";
-import { errorHandler } from "../utils/errorHandler.js";
-
+import { BadRequestError, NotFoundError } from "../utils/errorHandler.js";
 
 export const createShortUrlService = async(url, userId) => {
+    if (!url) {
+        throw new BadRequestError("Full URL is required");
+    }
+
     const short_url = generateNanoid(7);
     await saveShortUrl(url, short_url, userId);
     return short_url;
