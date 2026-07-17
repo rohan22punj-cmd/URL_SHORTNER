@@ -37,8 +37,8 @@ function App() {
         throw new Error(data?.message || data?.error || "Could not create short URL.");
       }
 
-      const result = await response.text();
-      setShortUrl(result);
+      const data = await response.json();
+      setShortUrl(data.short_url);
       setShowSuccess(true);
       setFullUrl("");
     } catch (err) {

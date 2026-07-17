@@ -4,7 +4,7 @@ import wrapAsync from "../utils/tryCatchWrapper.js";
 export const createShortUrl = wrapAsync(async(req, res) => {
     const { full_url } = req.body;
     const short_url = await createShortUrlService(full_url);
-    res.send(process.env.APP_URL + short_url);
+    res.json({ short_url: process.env.APP_URL + short_url });
 });
 
 export const redirectToOriginalUrl = wrapAsync(async(req, res) => {
