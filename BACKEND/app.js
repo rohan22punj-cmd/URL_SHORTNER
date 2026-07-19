@@ -8,6 +8,12 @@ import { errorHandler } from "./src/utils/errorHandler.js";
 dotenv.config("./.env");
 connectDB();
 import cors from "cors";
+import { attachUser } from "./src/middleware/auth.middleware.js";
+import cookieParser from "cookie-parser";
+
+app.use(cookieParser());
+app.use(attachUser);
+
 app.use(cors());
 
 app.use(express.json());

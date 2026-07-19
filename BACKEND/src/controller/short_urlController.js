@@ -12,3 +12,9 @@ export const redirectToOriginalUrl = wrapAsync(async(req, res) => {
     const url = await getOriginalUrlService(short_url);
     res.redirect(url.full_url);
 });
+
+export const createCustomShortUrl = wrapAsync(async(req, res) => {
+    const { full_url, custom_short_url } = req.body;
+    const short_url = await createShortUrlService(full_url, null, custom_short_url);
+    res.json({ short_url: process.env.APP_URL + short_url });
+});
