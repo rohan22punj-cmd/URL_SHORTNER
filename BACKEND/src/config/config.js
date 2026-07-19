@@ -4,3 +4,9 @@ export const cookieOptions = {
     sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 }
+
+export const clearCookieOptions = {
+    httpOnly: cookieOptions.httpOnly,
+    secure: cookieOptions.secure,
+    sameSite: cookieOptions.sameSite,
+}

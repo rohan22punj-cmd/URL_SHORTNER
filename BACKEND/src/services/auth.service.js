@@ -1,23 +1,58 @@
-import jwt from "jsonwebtoken";
-import User from "../models/user.model.js";
 import { findUserByEmail, createUser } from "../dao/user.dao.js";
-import { signToken } from "../utils/helper.js";
+import { BadRequestError } from "../utils/errorHandler.js";
+import { comparePassword, hashPassword, signToken } from "../utils/helper.js";
 
-export const registerUser = wrapAsync(async(req, res) => {
-    const { username, email, password } = req.body;
-    const user = await createUser({ username, email, password });
-    res.status(201).json({ message: "User registered successfully", user });
-});
+export const sanitizeUser = (user) => {
+    if (!user) return null;
 
-export const loginUser = wrapAsync(async(req, res) => {
-    const { email, password } = req.body;
-    const user = await findUserByEmail({ email: email });
+    const userObject = user.toObject ? user.toObject() : user;
+    delete userObject.password;
+    return userObject;
+};
+
+export const registerUserService = async({ name, username, email, password }) => {
+    const displayName = name || username;
+
+    if (!displayName || !email || !password) {
+        throw new BadRequestError("Name, email, and password are required.");
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await findUserByEmail(normalizedEmail);
+
+    if (existingUser) {
+        throw new BadRequestError("A user with this email already exists.");
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const user = await createUser({
+        name: displayName.trim(),
+        email: normalizedEmail,
+        password: hashedPassword,
+    });
+    const token = signToken({ id: user._id });
+
+    return { user, token };
+};
+
+export const loginUserService = async({ email, password }) => {
+    if (!email || !password) {
+        throw new BadRequestError("Email and password are required.");
+    }
+
+    const user = await findUserByEmail(email.trim().toLowerCase()).select("+password");
+
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        throw new BadRequestError("Invalid credentials.");
     }
-    const isMatch = await bcrypt.compare(password, user.password);
+
+    const isMatch = await comparePassword(password, user.password);
+
     if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        throw new BadRequestError("Invalid credentials.");
     }
-    res.status(200).json({ message: "User logged in successfully", user });
-});
+
+    const token = signToken({ id: user._id });
+
+    return { user, token };
+};
