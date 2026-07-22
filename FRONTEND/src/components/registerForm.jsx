@@ -22,7 +22,10 @@ function RegisterForm({ onSuccess }) {
             const data = await registerUser(name.trim(), email.trim(), password);
             onSuccess(data.user);
         } catch (err) {
-            setError(err.response?.data?.message || "Registration failed.");
+            setError(
+                err.response?.data?.message ||
+                "Cannot reach the server. Start the backend on port 3000, then try again."
+            );
         } finally {
             setIsLoading(false);
         }

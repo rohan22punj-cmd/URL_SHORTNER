@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         select: false,
     },
-    avtar: {
+    avatar: {
         type: String,
         default: function() {
             return getGravatarUrl(this.email);

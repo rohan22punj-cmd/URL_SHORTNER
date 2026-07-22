@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
-
-const API_URL = "/api/create";
+import { createShortUrl } from "../api/shortUrlApiu";
 
 function DashboardPage() {
   const { user, isCheckingSession } = useSelector((state) => state.auth);
@@ -26,20 +25,16 @@ function DashboardPage() {
 
     try {
       setIsLoading(true);
-      const response = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ full_url: fullUrl.trim() }) });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.message || "Could not create short URL.");
-      }
-      const data = await response.json();
+      const data = await createShortUrl(fullUrl.trim());
       setShortUrl(data.short_url);
       setFullUrl("");
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message || "Could not create short URL.");
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(shortUrl);
