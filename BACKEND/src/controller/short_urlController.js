@@ -1,4 +1,4 @@
-import { createShortUrlService, getOriginalUrlService } from "../services/short_urlService.js";
+import { createShortUrlService, getOriginalUrlService, getUserShortUrlsService } from "../services/short_urlService.js";
 import wrapAsync from "../utils/tryCatchWrapper.js";
 
 const getFullShortUrl = (slug) => {
@@ -22,4 +22,17 @@ export const createCustomShortUrl = wrapAsync(async(req, res) => {
     const { full_url, custom_short_url } = req.body;
     const short_url = await createShortUrlService(full_url, req.user?._id, custom_short_url);
     res.json({ short_url: getFullShortUrl(short_url) });
+});
+
+export const getUserShortUrls = wrapAsync(async(req, res) => {
+    const urls = await getUserShortUrlsService(req.user?._id);
+    res.json({
+        urls: urls.map((url) => ({
+            id: url._id,
+            full_url: url.full_url,
+            short_url: getFullShortUrl(url.short_url),
+            clicks: url.clicks,
+            createdAt: url.createdAt,
+        })),
+    });
 });
