@@ -19,6 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(parseCookies);
 app.use(attachUser);
 
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
 // API routes - register auth_routes before short_urlRoute so /api/me is not caught by /:short_url
 app.use("/api/auth", auth_routes);
 app.use("/api", auth_routes);
