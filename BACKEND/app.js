@@ -14,10 +14,15 @@ app.use(cors({
     credentials: true,
 }));
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(parseCookies);
 app.use(attachUser);
+
+app.get('/', (req, res) => {
+    res.send('URL Shortener API is running 🚀');
+});
 
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });
